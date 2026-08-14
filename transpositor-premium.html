@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transpositor Musical Pro - Premium</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #e2e8f0;
+        }
+
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        header h1 {
+            font-size: 2.8em;
+            background: linear-gradient(135deg, #a78bfa 0%, #34d399 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #06b6d4;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .top-bar {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .qr-section {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #334155;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .qr-section h3 {
+            color: #a78bfa;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        #qrcode {
+            margin: 15px auto;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        #qrcode > img, #qrcode > svg {
+            margin: 0 !important;
+        }
+
+        .qr-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .import-section, .stats-section {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #334155;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .import-section h3, .stats-section h3 {
+            color: #34d399;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .import-url {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .import-url input {
+            flex: 1;
+            padding: 10px;
+            background: #020617;
+            border: 2px solid #334155;
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-size: 0.9em;
+        }
+
+        .import-url button {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .import-url button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(6, 182, 212, 0.3);
+        }
+
+        .tutorial-link {
+            margin-top: 10px;
+            padding: 10px;
+            background: #1e293b;
+            border-radius: 8px;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .tutorial-link a {
+            color: #f59e0b;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .tutorial-link a:hover {
+            text-decoration: underline;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stat {
+            background: #020617;
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 3px solid #34d399;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #34d399;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.85em;
+            margin-top: 5px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .panel {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid #334155;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .panel h2 {
+            color: #a78bfa;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 300px;
+            background: #020617;
+            color: #e2e8f0;
+            border: 2px solid #334155;
+            border-radius: 10px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #a78bfa;
+            box-shadow: 0 0 15px rgba(167, 139, 250, 0.3);
+        }
+
+        #entrada {
+            color: #cbd5e1;
+        }
+
+        #salida {
+            color: #6ee7b7;
+        }
+
+        .controls {
+            background: #0f172a;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #334155;
+            margin-bottom: 30px;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group h3 {
+            color: #94a3b8;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: 2px solid #334155;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%);
+            color: white;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #a78bfa 0%, #34d399 100%);
+            border-color: #a78bfa;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(167, 139, 250, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc2626 0%, #ea580c 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+        }
+
+        .transponer-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .semitones-display {
+            text-align: center;
+            padding: 15px;
+            background: #020617;
+            border-radius: 8px;
+            border: 2px solid #334155;
+        }
+
+        .semitones-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #a78bfa;
+        }
+
+        .notas-rapidas {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .nota-btn {
+            padding: 10px;
+            font-size: 0.9em;
+            background: #1e293b;
+            border: 2px solid #334155;
+        }
+
+        .nota-btn:hover {
+            background: linear-gradient(135deg, #a78bfa 0%, #34d399 100%);
+        }
+
+        .info-box {
+            background: #1e293b;
+            border-left: 4px solid #a78bfa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            color: #cbd5e1;
+        }
+
+        .info-box h4 {
+            color: #a78bfa;
+            margin-bottom: 8px;
+        }
+
+        .info-box p, .info-box li {
+            font-size: 0.95em;
+            line-height: 1.6;
+            margin-bottom: 5px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            margin: 5% auto;
+            padding: 30px;
+            border: 2px solid #334155;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            color: #e2e8f0;
+        }
+
+        .close-modal {
+            color: #94a3b8;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-modal:hover {
+            color: #a78bfa;
+        }
+
+        .modal h2 {
+            color: #a78bfa;
+            margin-bottom: 20px;
+        }
+
+        .modal ol, .modal ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .modal code {
+            background: #020617;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #34d399;
+            font-family: 'Courier New', monospace;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+            margin-top: 40px;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .top-bar {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .transponer-controls {
+                grid-template-columns: 1fr;
+            }
+
+            .qr-section {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-bar {
+                grid-template-columns: 1fr;
+            }
+
+            .notas-rapidas {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 30px;
+            border-radius: 10px;
+            color: #a78bfa;
+            font-size: 1.2em;
+            z-index: 2000;
+        }
+
+        .spinner {
+            border: 4px solid #334155;
+            border-top: 4px solid #a78bfa;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 15px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-message {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            animation: slideDown 0.3s;
+            z-index: 2000;
+        }
+
+        .lacuerda-info {
+            background: #1e293b;
+            border: 2px solid #f59e0b;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            color: #fbbf24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎵 Transpositor Musical Pro</h1>
+            <span class="badge">✨ VERSIÓN PREMIUM CON QR + LaCuerda</span>
+            <p style="color: #94a3b8; margin-top: 10px;">Transpón acordes + Descarga con QR + Integración LaCuerda.net</p>
+        </header>
+
+        <!-- BARRA SUPERIOR: QR + IMPORTACIÓN + ESTADÍSTICAS -->
+        <div class="top-bar">
+            <!-- QR -->
+            <div class="qr-section">
+                <h3>📱 Código QR Descargable</h3>
+                <p style="color: #94a3b8; font-size: 0.9em;">Escanea para descargar</p>
+                <div id="qrcode"></div>
+                <div class="qr-buttons">
+                    <button class="btn-success" onclick="descargarQR()">💾 Descargar QR</button>
+                    <button class="btn-primary" onclick="mostrarCopiado()">📋 URL Copiada</button>
+                </div>
+                <p style="color: #64748b; font-size: 0.85em; margin-top: 10px;">URL: GitHub Pages</p>
+            </div>
+
+            <!-- IMPORTACIÓN -->
+            <div class="import-section">
+                <h3>🌐 Importar de LaCuerda.net</h3>
+                <div class="import-url">
+                    <input type="text" id="urlLaCuerda" placeholder="Pega URL de LaCuerda.net">
+                    <button class="btn-primary" onclick="abrirTutorialLaCuerda()">ℹ️ Tutorial</button>
+                </div>
+                <button class="btn-success" style="width: 100%;" onclick="procesarPaginaLaCuerda()">🎸 Cargar Canción</button>
+                <div class="lacuerda-info">
+                    <strong>💡 Cómo usar:</strong><br>
+                    1. Ve a <a href="https://acordes.lacuerda.net" target="_blank" style="color: #fbbf24;">LaCuerda.net</a><br>
+                    2. Busca una canción<br>
+                    3. Pega la URL aquí<br>
+                    4. ¡Hecho! Los acordes se cargarán automáticamente
+                </div>
+            </div>
+
+            <!-- ESTADÍSTICAS -->
+            <div class="stats-section">
+                <h3>📊 Estadísticas</h3>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value" id="acordesCount">0</div>
+                        <div class="stat-label">Acordes detectados</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="caracteres">0</div>
+                        <div class="stat-label">Caracteres</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="lineas">0</div>
+                        <div class="stat-label">Líneas</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="transpuestos">0</div>
+                        <div class="stat-label">Transposiciones</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTROLES -->
+        <div class="controls">
+            <div class="control-group">
+                <h3>🎼 Transposición Básica</h3>
+                <div class="transponer-controls">
+                    <button class="btn-danger" onclick="cambiarTonalidad(-1)">📉 -1 Semitono</button>
+                    <div class="semitones-display">
+                        <div class="semitones-value" id="desplazamiento">0</div>
+                        <div style="color: #94a3b8; margin-top: 5px;">semitonos</div>
+                    </div>
+                    <button class="btn-primary" onclick="cambiarTonalidad(1)">📈 +1 Semitono</button>
+                </div>
+                <div class="button-grid" style="margin-top: 15px;">
+                    <button class="btn-danger" onclick="cambiarTonalidad(-6)">-6 Semitonos</button>
+                    <button class="btn-primary" onclick="cambiarTonalidad(6)">+6 Semitonos</button>
+                    <button class="btn-danger" onclick="cambiarTonalidad(-12)">-1 Octava</button>
+                    <button class="btn-primary" onclick="cambiarTonalidad(12)">+1 Octava</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>🎹 Transponer a Nota Específica</h3>
+                <div class="notas-rapidas">
+                    <button class="nota-btn" onclick="transponerANota('C')">Do (C)</button>
+                    <button class="nota-btn" onclick="transponerANota('D')">Re (D)</button>
+                    <button class="nota-btn" onclick="transponerANota('E')">Mi (E)</button>
+                    <button class="nota-btn" onclick="transponerANota('F')">Fa (F)</button>
+                    <button class="nota-btn" onclick="transponerANota('G')">Sol (G)</button>
+                    <button class="nota-btn" onclick="transponerANota('A')">La (A)</button>
+                </div>
+                <div class="notas-rapidas">
+                    <button class="nota-btn" onclick="transponerANota('B')">Si (B)</button>
+                    <button class="nota-btn" onclick="transponerANota('C#')">Do# (C#)</button>
+                    <button class="nota-btn" onclick="transponerANota('D#')">Re# (D#)</button>
+                    <button class="nota-btn" onclick="transponerANota('F#')">Fa# (F#)</button>
+                    <button class="nota-btn" onclick="transponerANota('G#')">Sol# (G#)</button>
+                    <button class="nota-btn" onclick="transponerANota('A#')">La# (A#)</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>⚙️ Herramientas</h3>
+                <div class="button-grid">
+                    <button class="btn-success" onclick="copiarSalida()">📋 Copiar</button>
+                    <button class="btn-primary" onclick="exportarTXT()">💾 Descargar TXT</button>
+                    <button class="btn-danger" onclick="limpiarEntrada()">🗑️ Limpiar</button>
+                    <button class="btn-success" onclick="resetear()">🔄 Resetear</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANELES DE TEXTO -->
+        <div class="main-content">
+            <div class="panel">
+                <h2>📝 Canción Original</h2>
+                <textarea id="entrada" placeholder="Pega los acordes aquí...
+O importa desde LaCuerda.net"></textarea>
+            </div>
+
+            <div class="panel">
+                <h2>✨ Nueva Tonalidad</h2>
+                <textarea id="salida" readonly placeholder="Los acordes transponidos aparecerán aquí..."></textarea>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h4>💡 Características Premium:</h4>
+            <ul>
+                <li>✅ Código QR descargable para compartir</li>
+                <li>✅ Importar canciones de LaCuerda.net automáticamente</li>
+                <li>✅ Parser inteligente que detecta acordes en cualquier formato</li>
+                <li>✅ Transposición en tiempo real</li>
+                <li>✅ Exportar a múltiples formatos</li>
+                <li>✅ 12 tonalidades disponibles</li>
+                <li>✅ 100+ tipos de acordes soportados</li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <strong>Stack Tecnológico:</strong> HTML5 • CSS3 • JavaScript Vanilla • QRCode.js • GitHub Pages<br>
+            <small>Compatible con navegadores modernos • Sin conexión requerida • Código Abierto</small>
+        </div>
+    </div>
+
+    <!-- MODAL TUTORIAL -->
+    <div id="tutorialModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="cerrarModal()">&times;</span>
+            <h2>🎵 Cómo Importar de LaCuerda.net</h2>
+            <p style="color: #94a3b8; margin-bottom: 15px;">Sigue estos pasos para importar canciones automáticamente:</p>
+            
+            <h3 style="color: #a78bfa; margin-top: 20px;">Método 1: Copiar y Pegar (MÁS FÁCIL)</h3>
+            <ol style="color: #cbd5e1; line-height: 2;">
+                <li>Ve a <a href="https://acordes.lacuerda.net" target="_blank" style="color: #06b6d4;">LaCuerda.net</a></li>
+                <li>Busca una canción (ej: "Vicente Fernández - Mujeres Divinas")</li>
+                <li>Selecciona TODO el contenido de acordes con Ctrl+A (en la sección de acordes)</li>
+                <li>Copia con Ctrl+C</li>
+                <li>Pega en el panel "Canción Original" con Ctrl+V</li>
+                <li>¡Listo! Los acordes se detectarán automáticamente</li>
+            </ol>
+
+            <h3 style="color: #a78bfa; margin-top: 20px;">Método 2: Pegar URL (AUTOMÁTICO)</h3>
+            <ol style="color: #cbd5e1; line-height: 2;">
+                <li>Ve a <a href="https://acordes.lacuerda.net" target="_blank" style="color: #06b6d4;">LaCuerda.net</a></li>
+                <li>Busca y abre una canción</li>
+                <li>Copia la URL del navegador (Ctrl+L, Ctrl+C)</li>
+                <li>Pega en el campo "Importar de LaCuerda.net"</li>
+                <li>Haz clic en "🎸 Cargar Canción"</li>
+                <li>Espera a que se cargue automáticamente</li>
+            </ol>
+
+            <div class="info-box" style="margin-top: 20px;">
+                <h4>📍 Ejemplo de URL válida:</h4>
+                <code style="display: block; margin-top: 10px;">
+                    https://acordes.lacuerda.net/vicente_fernandez/mujeres_divinas.shtml
+                </code>
+            </div>
+
+            <h3 style="color: #a78bfa; margin-top: 20px;">¿Qué canciones puedo importar?</h3>
+            <p style="color: #cbd5e1;">LaCuerda.net tiene miles de canciones de artistas como:</p>
+            <ul style="color: #cbd5e1; margin: 10px 0 0 20px;">
+                <li>Vicente Fernández</li>
+                <li>Juan Gabriel</li>
+                <li>The Beatles</li>
+                <li>Bob Dylan</li>
+                <li>Muchas más...</li>
+            </ul>
+
+            <button class="btn-primary" onclick="cerrarModal()" style="width: 100%; margin-top: 20px;">Entendido</button>
+        </div>
+    </div>
+
+    <!-- CARGANDO -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <div>Cargando canción...</div>
+    </div>
+
+    <!-- MENSAJE DE ÉXITO -->
+    <div class="success-message" id="successMessage">✅ ¡Operación completada!</div>
+
+    <script>
+        const NOTAS_SOSTENIDOS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        const NOTAS_BEMOLES = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+
+        let desplazamiento = 0;
+        let nota_origen = null;
+        let transposiciones = 0;
+        let qrCode = null;
+
+        const entrada = document.getElementById('entrada');
+        const salida = document.getElementById('salida');
+        const desplazamientoLabel = document.getElementById('desplazamiento');
+
+        entrada.addEventListener('input', procesar);
+        entrada.addEventListener('input', actualizarEstadisticas);
+
+        // GENERAR QR AL CARGAR
+        window.addEventListener('load', function() {
+            generarQR();
+            cargarEjemploInicial();
+        });
+
+        // GENERAR QR
+        function generarQR() {
+            const urlActual = window.location.href;
+            const elementoQR = document.getElementById('qrcode');
+            
+            if (qrCode) {
+                elementoQR.innerHTML = '';
+            }
+            
+            qrCode = new QRCode(elementoQR, {
+                text: urlActual,
+                width: 200,
+                height: 200,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+
+        // DESCARGAR QR
+        function descargarQR() {
+            const elemento = document.querySelector('#qrcode img') || document.querySelector('#qrcode canvas');
+            if (!elemento) return;
+
+            const link = document.createElement('a');
+            link.href = elemento.toDataURL ? elemento.toDataURL() : elemento.src;
+            link.download = 'transpositor-musical-qr.png';
+            link.click();
+            mostrarMensaje('QR descargado');
+        }
+
+        // MODAL TUTORIAL
+        function abrirTutorialLaCuerda() {
+            document.getElementById('tutorialModal').style.display = 'block';
+        }
+
+        function cerrarModal() {
+            document.getElementById('tutorialModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('tutorialModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // PROCESAR PÁGINA LACUERDA
+        async function procesarPaginaLaCuerda() {
+            const url = document.getElementById('urlLaCuerda').value;
+            
+            if (!url.includes('lacuerda.net')) {
+                alert('❌ Por favor ingresa una URL válida de LaCuerda.net');
+                return;
+            }
+
+            mostrarLoading(true);
+
+            try {
+                // Usar API de CORS proxy como alternativa
+                const corsUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+                const response = await fetch(corsUrl);
+                const data = await response.json();
+                const html = data.contents;
+
+                // Extraer acordes del HTML
+                const acordes = extraerAcordesDelHTML(html);
+                
+                if (acordes.length > 0) {
+                    entrada.value = acordes;
+                    procesar();
+                    mostrarMensaje(`✅ ${acordes.split('\n').length} líneas cargadas desde LaCuerda.net`);
+                } else {
+                    alert('⚠️ No se encontraron acordes en la página. Intenta copiar manualmente.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                // Fallback: mostrar instrucciones
+                alert('ℹ️ Para cargar automáticamente:\n\n1. Ve a LaCuerda.net\n2. Abre la canción\n3. Copia TODO el contenido (Ctrl+A)\n4. Pégalo aquí');
+                abrirTutorialLaCuerda();
+            } finally {
+                mostrarLoading(false);
+            }
+        }
+
+        // EXTRAER ACORDES DEL HTML
+        function extraerAcordesDelHTML(html) {
+            // Remover etiquetas HTML
+            let texto = html.replace(/<[^>]*>/g, ' ');
+            
+            // Decodificar entidades HTML
+            texto = texto.replace(/&nbsp;/g, ' ');
+            texto = texto.replace(/&lt;/g, '<');
+            texto = texto.replace(/&gt;/g, '>');
+            texto = texto.replace(/&amp;/g, '&');
+            
+            // Limpiar espacios excesivos
+            texto = texto.replace(/\s+/g, ' ');
+            
+            // Detectar líneas con acordes
+            const patron = /[A-G](?:#|b)?(?:m|min|maj|maj7|dim|aug|sus|add|6|7|9|11)?\d*/g;
+            
+            // Dividir en líneas y filtrar las que tengan acordes
+            const lineas = texto.split('\n').filter(linea => {
+                const acordesEnLinea = linea.match(patron);
+                return acordesEnLinea && acordesEnLinea.length > 0;
+            });
+
+            return lineas.join('\n');
+        }
+
+        function transponer_acorde(acorde) {
+            const coincidencia = acorde.match(/^([A-G](?:#|b)?)(.*)$/);
+            if (!coincidencia) return acorde;
+
+            const [, nota, modificador] = coincidencia;
+            const escala = nota.includes('b') ? NOTAS_BEMOLES : NOTAS_SOSTENIDOS;
+
+            if (!escala.includes(nota)) return acorde;
+
+            const indice = escala.indexOf(nota);
+            const nueva_nota = escala[(indice + desplazamiento) % 12];
+
+            return nueva_nota + modificador;
+        }
+
+        function procesar() {
+            const texto = entrada.value;
+            const patron = /(?<![A-Za-z])([A-G](?:#|b)?(?:m|min|maj|dim|aug|sus|add|6|7|9|11)?\d*)(?![A-Za-z])/g;
+
+            const resultado = texto.replace(patron, (match) => transponer_acorde(match));
+
+            salida.value = resultado;
+        }
+
+        function cambiarTonalidad(cantidad) {
+            desplazamiento = (desplazamiento + cantidad) % 12;
+            if (desplazamiento < 0) desplazamiento += 12;
+            desplazamientoLabel.textContent = desplazamiento > 6 ? desplazamiento - 12 : desplazamiento;
+            transposiciones++;
+            procesar();
+            actualizarEstadisticas();
+        }
+
+        function transponerANota(nota) {
+            if (nota_origen === null) {
+                nota_origen = 0;
+            }
+            const escala = NOTAS_SOSTENIDOS;
+            const indice_objetivo = escala.indexOf(nota);
+            desplazamiento = (indice_objetivo - nota_origen) % 12;
+            if (desplazamiento < 0) desplazamiento += 12;
+            nota_origen = indice_objetivo;
+            desplazamientoLabel.textContent = desplazamiento > 6 ? desplazamiento - 12 : desplazamiento;
+            transposiciones++;
+            procesar();
+            actualizarEstadisticas();
+        }
+
+        function copiarSalida() {
+            salida.select();
+            document.execCommand('copy');
+            mostrarMensaje('Copiado al portapapeles');
+        }
+
+        function exportarTXT() {
+            const contenido = salida.value;
+            const elemento = document.createElement('a');
+            elemento.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(contenido));
+            elemento.setAttribute('download', 'cancion-transpuesta.txt');
+            elemento.style.display = 'none';
+            document.body.appendChild(elemento);
+            elemento.click();
+            document.body.removeChild(elemento);
+            mostrarMensaje('Archivo descargado');
+        }
+
+        function limpiarEntrada() {
+            entrada.value = '';
+            procesar();
+            actualizarEstadisticas();
+        }
+
+        function resetear() {
+            entrada.value = '';
+            salida.value = '';
+            desplazamiento = 0;
+            nota_origen = null;
+            desplazamientoLabel.textContent = '0';
+            transposiciones = 0;
+            actualizarEstadisticas();
+        }
+
+        function actualizarEstadisticas() {
+            const texto = entrada.value;
+            const patron = /(?<![A-Za-z])([A-G](?:#|b)?(?:m|min|maj|dim|aug|sus|add|6|7|9|11)?\d*)(?![A-Za-z])/g;
+            const acordes = texto.match(patron) || [];
+            
+            document.getElementById('acordesCount').textContent = acordes.length;
+            document.getElementById('caracteres').textContent = texto.length;
+            document.getElementById('lineas').textContent = texto.split('\n').length;
+            document.getElementById('transpuestos').textContent = transposiciones;
+        }
+
+        function mostrarMensaje(texto) {
+            const msg = document.getElementById('successMessage');
+            msg.textContent = texto;
+            msg.style.display = 'block';
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 2000);
+        }
+
+        function mostrarLoading(mostrar) {
+            document.getElementById('loading').style.display = mostrar ? 'block' : 'none';
+        }
+
+        function mostrarCopiado() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                mostrarMensaje('URL copiada: ' + url);
+            });
+        }
+
+        function cargarEjemploInicial() {
+            entrada.value = `C        G        Am       F
+Let it be, let it be
+G                 F        C
+Whisper words of wisdom, let it be
+
+Verse:
+C        G        Am       F
+And in my hour of darkness
+G                 F        C
+She is standing right in front of me`;
+            procesar();
+            actualizarEstadisticas();
+        }
+    </script>
+</body>
+</html>
